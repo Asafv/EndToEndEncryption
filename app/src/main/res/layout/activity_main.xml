@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:orientation="vertical"
+    tools:context="com.example.asafv.endtoendsample.MainActivity">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:layout_marginTop="5dp"
+        android:text="@string/explain"
+        android:textColor="@android:color/black"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/etMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView"
+        android:layout_margin="10dp"
+        android:hint="@string/hint"
+        android:inputType="textPersonName"
+        android:textSize="12sp" />
+
+    <Button
+        android:id="@+id/btnReset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/etMessage"
+        android:text="@string/reset"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btnEncrypt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/etMessage"
+        android:text="@string/encrypt"
+        android:textAllCaps="false" />
+
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnEncrypt"
+        android:drawableBottom="@android:drawable/arrow_down_float"
+        android:gravity="center_horizontal"
+        android:text="@string/encrypt_message" />
+
+    <ScrollView
+        android:id="@+id/scrollContainer"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_below="@+id/textView2">
+
+        <TextView
+            android:id="@+id/tvEncryptedMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:textColor="@android:color/holo_red_dark" />
+
+    </ScrollView>
+
+    <RelativeLayout
+        android:id="@+id/rlDecryptContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/scrollContainer"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/btnDecrypt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="10dp"
+            android:text="@string/decrypt"
+            android:textAllCaps="false" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/btnDecrypt"
+            android:drawableBottom="@android:drawable/arrow_down_float"
+            android:gravity="center_horizontal"
+            android:text="@string/decrypt_message" />
+
+        <TextView
+            android:id="@+id/tvDecryptedMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView3"
+            android:layout_margin="10dp"
+            android:textColor="@android:color/holo_green_dark" />
+    </RelativeLayout>
+</RelativeLayout>

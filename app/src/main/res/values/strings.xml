@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">EndToEndSample</string>
+    <string name="explain">Enter the message you want to encrypt with end-to-end.</string>
+    <string name="encrypt_message">Encrypted Message</string>
+    <string name="decrypt">Verify &amp; Decrypt</string>
+    <string name="decrypt_message">Decrypted Message</string>
+    <string name="hint">Normal message</string>
+    <string name="encrypt">Encrypt</string>
+    <string name="reset">Reset</string>
+</resources>
