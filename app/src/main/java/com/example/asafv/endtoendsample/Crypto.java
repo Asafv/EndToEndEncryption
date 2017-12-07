@@ -61,6 +61,13 @@ public class Crypto {
     private KeyStore mKeystore;
     private byte[] secretEncryptedBytes;
 
+    public static Crypto getInstance() {
+        if (sInstance == null) {
+            sInstance = new Crypto();
+        }
+        return sInstance;
+    }
+
     /**
      * This will create a new keystore on the device if doesn't exist already with the KEY_ALIAS
      */
@@ -74,14 +81,7 @@ public class Crypto {
         }
     }
 
-    public static Crypto getInstance() {
-        if (sInstance == null) {
-            sInstance = new Crypto();
-        }
-        return sInstance;
-    }
-
-    // Not in use
+    // use for local testing
     public void test(String message) {
         // first encrypt the message
         String encryptedMessage = encryptMessageBody(message, getPublicKey());
@@ -317,7 +317,7 @@ public class Crypto {
             while (aliases.hasMoreElements()) {
                 keyAliases.add(aliases.nextElement());
             }
-//            Log.d(TAG, "refreshKeys: " + keyAliases);
+            Log.d(TAG, "refreshKeys: " + keyAliases);
         } catch (Exception e) {
             Log.e(TAG, "refreshKeys: ERR: ", e);
         }
