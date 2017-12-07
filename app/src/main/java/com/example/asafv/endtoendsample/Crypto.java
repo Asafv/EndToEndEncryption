@@ -180,7 +180,6 @@ public class Crypto {
                 try {
                     clearText = AESCrypt.decrypt(new String(clearSecret), encryptedMessage);
                 } catch (GeneralSecurityException e) {
-                    // TODO: 10/19/17 handle error
                     e.printStackTrace();
                 }
 
