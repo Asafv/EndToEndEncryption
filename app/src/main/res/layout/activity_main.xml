@@ -15,6 +15,7 @@
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"
         android:layout_marginTop="5dp"
+        android:gravity="center"
         android:text="@string/explain"
         android:textColor="@android:color/black"
         android:textSize="14sp"
