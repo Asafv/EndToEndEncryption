@@ -1,8 +1,10 @@
 package com.example.asafv.endtoendsample;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
@@ -57,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
             if (clearMessage.isEmpty()) {
                 Toast.makeText(this, "Nothing to encrypt", Toast.LENGTH_SHORT).show();
             } else {
-                // encrypt message with public key (should be the remote public key)
+                // encrypt message with (remote) public key
                 String encryptedMessage = mCrypto.encryptMessageBody(clearMessage, mCrypto.getPublicKey());
                 if (encryptedMessage != null) {
                     tvEncryptedMessage.setText(encryptedMessage);
@@ -72,6 +74,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupDecryptContainer() {
+        // hide keyboard
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        assert imm != null;
+        imm.hideSoftInputFromWindow(rlDecryptContainer.getWindowToken(), 0);
+
         rlDecryptContainer.setVisibility(View.VISIBLE);
         btnDecrypt.setOnClickListener(v -> {
             String encryptedMessage = tvEncryptedMessage.getText().toString();

@@ -99,11 +99,9 @@ public class Crypto {
             if (!mKeystore.containsAlias(KEY_ALIAS)) {
                 Calendar start = Calendar.getInstance();
                 Calendar end = Calendar.getInstance();
-                end.add(Calendar.YEAR, 1); // TODO make sure to register when ever a new key is generated
+                end.add(Calendar.YEAR, 1); // TODO make sure to register when ever a new key is required
 
                 KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA", "AndroidKeyStore");
-
-//                RSAKeyGenParameterSpec spec2 = new RSAKeyGenParameterSpec(2048, BigInteger.ONE);
 
                 KeyPairGeneratorSpec spec = new KeyPairGeneratorSpec.Builder(EndToEndApp.getInstance().getApplicationContext())
                         .setAlias(KEY_ALIAS)
@@ -158,7 +156,7 @@ public class Crypto {
             /* Logs */
             if (BuildConfig.DEBUG) {
                 Log.d(TAG, "encrypt secret with RSA remote public: " + Arrays.toString(secretEncryptedBytes));
-                Log.i(TAG, "encryptString: " + encryptedMsg);
+                Log.e(TAG, "encryptString: " + encryptedMsg);
             }
 
             return encryptedMsg;
@@ -190,7 +188,7 @@ public class Crypto {
                 if (BuildConfig.DEBUG) {
                     Log.i(TAG, "Digital Signature Verified");
                     Log.d(TAG, "clearSecret: " + Arrays.toString(clearSecret));
-                    Log.d(TAG, "verifyAndDecryptMessageBody: clearText: " + clearText);
+                    Log.i(TAG, "clearText: " + clearText);
                 }
 
                 return clearText;

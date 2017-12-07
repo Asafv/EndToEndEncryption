@@ -17,6 +17,7 @@
         android:layout_marginTop="5dp"
         android:text="@string/explain"
         android:textColor="@android:color/black"
+        android:textSize="14sp"
         android:textStyle="bold" />
 
     <EditText
@@ -27,7 +28,7 @@
         android:layout_margin="10dp"
         android:hint="@string/hint"
         android:inputType="textPersonName"
-        android:textSize="12sp" />
+        android:textSize="16sp" />
 
     <Button
         android:id="@+id/btnReset"
