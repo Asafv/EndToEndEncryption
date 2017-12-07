@@ -1,7 +1,6 @@
 package com.example.asafv.endtoendsample;
 
 
-import android.content.Context;
 import android.security.KeyPairGeneratorSpec;
 import android.support.annotation.NonNull;
 import android.util.Base64;
