@@ -45,6 +45,8 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.security.auth.x500.X500Principal;
 
+import io.reactivex.Single;
+
 /**
  * Created by asafvaron on 09/10/2017.
  */
@@ -104,7 +106,7 @@ public class Crypto {
 
                 KeyPairGeneratorSpec spec = new KeyPairGeneratorSpec.Builder(EndToEndApp.getInstance().getApplicationContext())
                         .setAlias(KEY_ALIAS)
-                        .setSubject(new X500Principal("CN=EndToEndSampleApp, O=SHEKER"))
+                        .setSubject(new X500Principal("CN=EndToEndSampleApp, O=Sheker"))
                         .setSerialNumber(BigInteger.ONE)
                         .setStartDate(start.getTime())
                         .setEndDate(end.getTime())
@@ -381,5 +383,71 @@ public class Crypto {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public Single<String> encryptMessageBodyObs(String clearMessage, PublicKey publicKey) {
+        return Single.create(e -> {
+            try {
+                // generate a secret key for each message
+                KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+                keyGen.init(256);
+                SecretKey secret = keyGen.generateKey();
+
+                byte[] secretBytes = secret.getEncoded();
+
+                // encrypt secret with RSA remote public (send this to server as well)
+                secretEncryptedBytes = encryptWithRSA(secretBytes, publicKey);
+
+                // encrypt message with AES
+                String encryptedMsg = AESCrypt.encrypt(new String(secretBytes), clearMessage);
+
+            /* Logs */
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "encrypt secret with RSA remote public: " + Arrays.toString(secretEncryptedBytes));
+                    Log.e(TAG, "encryptString: " + encryptedMsg);
+                }
+
+                e.onSuccess(encryptedMsg);
+
+            } catch (GeneralSecurityException gse) {
+                e.onError(gse);
+            }
+        });
+    }
+
+    public Single<String> verifyAndDecryptMessageBodyObs(String encryptedMessage, byte[] secretEncryptedBytes,
+                                               byte[] realSignatureBytes, RSAPublicKey remotePublicKey) {
+        return Single.create(e -> {
+            // verify rsa signature
+            if (rsaSignatureVerify(encryptedMessage.getBytes(), realSignatureBytes, remotePublicKey)) {
+
+                // first decode the secret key from the rsa message
+                byte[] clearSecret = decryptWithRSA(secretEncryptedBytes, getPrivateKey());
+
+                if (clearSecret != null) {
+                    String clearText = null;
+                    try {
+                        clearText = AESCrypt.decrypt(new String(clearSecret), encryptedMessage);
+                    } catch (GeneralSecurityException gse) {
+                        gse.printStackTrace();
+                        e.onError(gse);
+                    }
+
+                    if (BuildConfig.DEBUG) {
+                        Log.i(TAG, "Digital Signature Verified");
+                        Log.d(TAG, "clearSecret: " + Arrays.toString(clearSecret));
+                        Log.i(TAG, "clearText: " + clearText);
+                    }
+
+                    e.onSuccess(clearText);
+                } else {
+                    Log.e(TAG, "verifyAndDecryptMessageBody: ERR: cannot decrypt without secretOriginal");
+                    e.onError(new Throwable("verifyAndDecryptMessageBody: ERR: cannot decrypt without secretOriginal"));
+                }
+            } else {
+                Log.e(TAG, "DigitalSignature is not verified!");
+                e.onError(new Throwable("DigitalSignature is not verified!"));
+            }
+        });
     }
 }

@@ -3,6 +3,7 @@ package com.example.asafv.endtoendsample;
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -13,7 +14,11 @@ import android.widget.Toast;
 
 import java.security.interfaces.RSAPublicKey;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
 
     private Crypto mCrypto;
 
@@ -59,7 +64,27 @@ public class MainActivity extends AppCompatActivity {
             if (clearMessage.isEmpty()) {
                 Toast.makeText(this, "Nothing to encrypt", Toast.LENGTH_SHORT).show();
             } else {
+
+                // with observables (Single)
                 // encrypt message with (remote) public key
+                mCrypto.encryptMessageBodyObs(clearMessage, mCrypto.getPublicKey())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io())
+                        .subscribe(
+                                s -> {
+                                    Log.i(TAG, "encryptMessageBodyObs: onSuccess");
+                                    if (!s.isEmpty()) {
+                                        tvEncryptedMessage.setText(s);
+                                        setupDecryptContainer();
+                                    }
+                                }, throwable -> {
+                                    Log.e(TAG, "encryptMessageBodyObs: onError: ", throwable);
+                                    Toast.makeText(this, throwable.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                        );
+
+/*
+                // normal way to encrypt - should run on background thread
                 String encryptedMessage = mCrypto.encryptMessageBody(clearMessage, mCrypto.getPublicKey());
                 if (encryptedMessage != null) {
                     tvEncryptedMessage.setText(encryptedMessage);
@@ -67,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(this, "Error encrypting\nPlease check the log.", Toast.LENGTH_SHORT).show();
                 }
+*/
             }
         });
 
@@ -82,8 +108,32 @@ public class MainActivity extends AppCompatActivity {
         rlDecryptContainer.setVisibility(View.VISIBLE);
         btnDecrypt.setOnClickListener(v -> {
             String encryptedMessage = tvEncryptedMessage.getText().toString();
+
             if (!encryptedMessage.isEmpty()) {
 
+                // with observables (Single)
+                mCrypto.verifyAndDecryptMessageBodyObs(encryptedMessage,
+                        mCrypto.getSecretEncryptedBytes(),
+                        mCrypto.rsaSignatureSign(encryptedMessage),
+                        (RSAPublicKey) mCrypto.getPublicKey())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io())
+                        .subscribe(
+                                s -> {
+                                    Log.i(TAG, "verifyAndDecryptMessageBodyObs: onSuccess");
+                                    if (!s.isEmpty()) {
+                                        tvDecryptedMessage.setText(s);
+                                    }
+                                },
+                                throwable -> {
+                                    Log.e(TAG, "verifyAndDecryptMessageBodyObs: onError: ", throwable);
+                                    Toast.makeText(this, throwable.getLocalizedMessage(),
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                        );
+
+/*
+                // normal way - should be done on background thread
                 // verify the message was signed with the following params
                 // 1. secret bytes
                 // 2. rsa signature sign
@@ -96,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
                 if (clearMessage != null) {
                     tvDecryptedMessage.setText(clearMessage);
                 }
+*/
             }
         });
     }
