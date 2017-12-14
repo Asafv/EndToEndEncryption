@@ -110,7 +110,6 @@ public class MainActivity extends AppCompatActivity {
             String encryptedMessage = tvEncryptedMessage.getText().toString();
 
             if (!encryptedMessage.isEmpty()) {
-
                 // with observables (Single)
                 mCrypto.verifyAndDecryptMessageBodyObs(encryptedMessage,
                         mCrypto.getSecretEncryptedBytes(),

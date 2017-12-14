@@ -50,7 +50,6 @@ import io.reactivex.Single;
 /**
  * Created by asafvaron on 09/10/2017.
  */
-
 public class Crypto {
 
     private static final String TAG = "Crypto";
@@ -234,7 +233,8 @@ public class Crypto {
             byte[] signature = dsa.sign();
 
             if (BuildConfig.DEBUG) {
-                Log.d(TAG, "rsaSignatureSign(Base64): " + Base64.encodeToString(signature, Base64.NO_WRAP));
+                Log.d(TAG, "rsaSignatureSign(Base64): "
+                        + Base64.encodeToString(signature, Base64.NO_WRAP));
             }
 
             return signature;
@@ -249,22 +249,23 @@ public class Crypto {
         return null;
     }
 
-    private byte[] encryptWithRSA(byte[] input, Key key_for_enc) {
+    private byte[] encryptWithRSA(byte[] secretBytes, Key remotePublicKey) {
         try {
             // Bouncy Castle security provider
             Provider p = Security.getProvider("BC");
             Cipher inCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding", p);
 
-            inCipher.init(Cipher.ENCRYPT_MODE, key_for_enc);
+            inCipher.init(Cipher.ENCRYPT_MODE, remotePublicKey);
 
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             CipherOutputStream cipherOutputStream = new CipherOutputStream(
                     outputStream, inCipher);
 
-            cipherOutputStream.write(input);
+            cipherOutputStream.write(secretBytes);
             cipherOutputStream.close();
 
             return outputStream.toByteArray();
+
         } catch (InvalidKeyException e) {
             e.printStackTrace();
         } catch (NoSuchPaddingException e) {
@@ -416,7 +417,7 @@ public class Crypto {
     }
 
     public Single<String> verifyAndDecryptMessageBodyObs(String encryptedMessage, byte[] secretEncryptedBytes,
-                                               byte[] realSignatureBytes, RSAPublicKey remotePublicKey) {
+                                                         byte[] realSignatureBytes, RSAPublicKey remotePublicKey) {
         return Single.create(e -> {
             // verify rsa signature
             if (rsaSignatureVerify(encryptedMessage.getBytes(), realSignatureBytes, remotePublicKey)) {
